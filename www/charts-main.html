@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+  <title>IT Dashboard</title>
+  <meta charset="utf-8">
+  
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1" />
+    
+    <script src="assets/js/angular.min.js"></script>
+    
+    <script src="js/jquery.min.js"></script>
+    <script src="js/dashdaily.js"></script>
+    
+    <link href="http://fonts.googleapis.com/css?family=Arimo:400,700,400italic" rel="stylesheet">
+    <link href="assets/css/fonts/linecons/css/linecons.css" rel="stylesheet">
+    <link href="assets/css/fonts/fontawesome/css/font-awesome.min.css" rel="stylesheet">    
+    
+    <link rel="stylesheet" href="assets/css/bootstrap.css">
+	<link rel="stylesheet" href="assets/css/xenon-core.css">
+	<link rel="stylesheet" href="assets/css/xenon-forms.css">
+	
+    <link rel="stylesheet" href="assets/css/formater.css">
+	
+    <link rel="stylesheet" href="assets/css/xenon-skins.css">
+	<link rel="stylesheet" href="assets/css/custom.css">
+	<script src="js/jquery-1.11.1.min.js"></script>
+
+    <link href="assets/css/morris.css" rel="stylesheet">
+    
+    <!-- Bootstrap Core CSS -->
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+    <script src="https://cdn.firebase.com/js/client/2.2.3/firebase.js"></script>	
+    <script src="https://cdn.firebase.com/libs/angularfire/1.0.0/angularfire.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment-with-locales.min.js"></script>
+    
+
+</head>
+<body ng-controller="dashitems" ng-init="carregar(ano_mes_dia)">
+    
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>                        
+              </button>
+              <a class="navbar-brand">IT Dashboard</a>
+            </div>
+            <div class="collapse navbar-collapse" id="myNavbar">
+              <ul class="nav navbar-nav">
+                <li><a href="index.html">Mensal</a></li>
+                <li><a href="dailydash.html">Diário</a></li>                  
+                <li><a href="evolucao.html">Evolução</a></li>  
+                <li><a href="charts.html">Gráficos</a></li>
+              </ul>
+              <ul class="nav navbar-nav navbar-right">
+                <li><a>{{currentTime}}</a></li>
+              </ul>    
+            </div>
+          </div>
+        </nav>
+    
+        <div>
+            <br>
+            <br>
+        </div>
+    
+        <div class="spinnerpos" ng-show="carregou">
+            <div class="preloader1">                
+               <span></span>
+               <span></span>
+               <span></span>
+               <span></span>
+               <span></span>
+               <span></span>
+               <span></span>
+               <span></span>
+               <span></span>
+               <span></span>
+            </div>
+        </div>
+        
+        <div>
+    
+            <div class="block-center text-center align-center col-sm-12">
+                <h3>
+                    <button type="button" class="btn btn-success btn-lg" ng-click="before()"><i class="fa fa-lg fa-chevron-circle-left"></i></button>
+                    <strong>&nbsp;{{data_exibir}}&nbsp;</strong>
+                    <button type="button" class="btn btn-success btn-lg" ng-click="after()"><i class="fa fa-lg fa-chevron-circle-right"></i></button>
+                </h3>
+            </div>
+            
+            <div class="col-sm-4">
+                <div class="xe-widget xe-counter-block" data-count=".num" data-from="0" data-to="99.9" data-suffix="%" data-duration="2">
+                    <div class="xe-upper">
+
+                        <div class="xe-icon">
+                            <i class="fa-tachometer"></i>
+                        </div>
+                        <div class="xe-label">
+                            <strong class="num">{{sla}}%</strong>
+                            <span>SLA no prazo</span>
+                        </div>
+
+                    </div>
+                    <div class="xe-lower">
+                        <div class="border"></div>
+
+                        <span>Meta</span>
+                        <strong>98% no prazo</strong>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="col-sm-4" ng-controller="dashitems">
+
+                <div class="xe-widget xe-counter-block xe-counter-block-purple" data-count=".num" data-from="0" data-to="512" data-duration="3">
+                    <div class="xe-upper">
+
+                        <div class="xe-icon">
+                            <i class="fa-line-chart"></i>
+                        </div>
+                        <div class="xe-label">
+                            <strong class="num">{{vol_acum}}</strong>
+                            <span>Volume de tickets abertos</span>
+                        </div>
+
+                    </div>
+                    <div class="xe-lower">
+                        <div class="border"></div>
+
+                        <span>Baseline mensal</span>
+                        <strong>639 tickets</strong>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-sm-4">
+                <div class="xe-widget xe-counter-block xe-counter-block-red" data-count=".num" data-from="0" data-to="99.9" data-suffix="%" data-duration="2">
+                    <div class="xe-upper">
+
+                        <div class="xe-icon">
+                            <i class="fa-thumbs-down"></i>
+                        </div>
+                        <div class="xe-label">
+                            <strong class="num">{{reabertos}}</strong>
+                            <span>Tickets reabertos</span>
+                        </div>
+                    </div>
+                    <div class="xe-lower">
+                        <div class="border"></div>
+                        <span>Meta</span>
+                        <strong>0 tickets reabertos</strong>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-sm-6">
+                <div class="xe-widget xe-counter-block xe-counter-block-white">
+                    <div id="bar-5"></div>    
+                </div>
+            </div>
+    
+            <script>
+				var xenonPalette = ['#68b828','#7c38bc','#0e62c7','#fcd036','#4fcdfc','#00b19d','#ff6264','#f7aa47'];
+			</script>
+			
+            <div class="col-sm-6">
+
+                <div class="xe-widget xe-counter-block xe-counter-block-white">
+
+                    <div class="panel-body">	
+                        <script type="text/javascript">
+                            jQuery(document).ready(function($)
+                            {
+                                var dataSourcePie = [
+                                    {region: "Asia", val: 4119626293},
+                                    {region: "Africa", val: 1012956064},
+                                    {region: "Northern America", val: 344124520},
+                                    {region: "Latin America and the Caribbean", val: 590946440},
+                                    {region: "Europe", val: 727082222},
+                                    {region: "Oceania", val: 35104756}
+                                ], timer;
+
+                                $("#bar-10").dxPieChart({
+                                    dataSource: dataSourcePie,
+                                    title: "The Population of Continents and Regions",
+                                    tooltip: {
+                                        enabled: false,
+                                        format:"millions",
+                                        customizeText: function() { 
+                                            return this.argumentText + "<br/>" + this.valueText;
+                                        }
+                                    },
+                                    size: {
+                                        height: 420
+                                    },
+                                    pointClick: function(point) {
+                                        point.showTooltip();
+                                        clearTimeout(timer);
+                                        timer = setTimeout(function() { point.hideTooltip(); }, 2000);
+                                        $("select option:contains(" + point.argument + ")").prop("selected", true);
+                                    },
+                                    legend: {
+                                        visible: false
+                                    },  
+                                    series: [{
+                                        type: "doughnut",
+                                        argumentField: "region"
+                                    }],
+                                    palette: xenonPalette
+                                });
+
+                            });
+                        </script>
+                        <div id="bar-10"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            
+            <div>
+                <br>
+            </div>
+        </div>
+
+    
+        <!-- Bootstrap Core JavaScript -->
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/dashdaily.js"></script>
+
+        <!-- Morris Charts JavaScript -->
+        <script src="js/plugins/morris/raphael.min.js"></script>
+        <script src="js/plugins/morris/morris.min.js"></script>
+        <script src="js/plugins/morris/morris-data.js"></script>
+
+        <!-- Flot Charts JavaScript -->
+        <!--[if lte IE 8]><script src="js/excanvas.min.js"></script><![endif]-->
+        <script src="js/plugins/flot/jquery.flot.js"></script>
+        <script src="js/plugins/flot/jquery.flot.tooltip.min.js"></script>
+        <script src="js/plugins/flot/jquery.flot.resize.js"></script>
+        <script src="js/plugins/flot/jquery.flot.pie.js"></script>
+        <script src="js/plugins/flot/flot-data.js"></script>
+
+        <script src="assets/js/devexpress-web-14.1/js/globalize.min.js"></script>
+        <script src="assets/js/devexpress-web-14.1/js/dx.chartjs.js"></script>
+
+</body>
+</html>
